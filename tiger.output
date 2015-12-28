@@ -1,0 +1,142 @@
+Terminais não utilizados na gramática
+
+   STRING
+   INT
+   COMMA
+   COLON
+   SEMICOLON
+   LPAREN
+   RPAREN
+   LBRACK
+   RBRACK
+   LBRACE
+   RBRACE
+   DOT
+   PLUS
+   MINUS
+   TIMES
+   DIVIDE
+   EQUAL
+   NEQUAL
+   LT
+   LE
+   GT
+   GE
+   AND
+   OR
+   ASSIGN
+   ARRAY
+   IF
+   THEN
+   ELSE
+   WHILE
+   FOR
+   TO
+   DO
+   LET
+   IN
+   END
+   OF
+   BREAK
+   NIL
+   FUNCTION
+   VAR
+   TYPE
+   IMPORT
+   PRIVATE
+
+
+Gramática
+
+    0 $accept: exp $end
+
+    1 exp: ID
+
+
+Terminais, com as regras aonde aparecem
+
+$end (0) 0
+error (256)
+ID (258) 1
+STRING (259)
+INT (260)
+COMMA (261)
+COLON (262)
+SEMICOLON (263)
+LPAREN (264)
+RPAREN (265)
+LBRACK (266)
+RBRACK (267)
+LBRACE (268)
+RBRACE (269)
+DOT (270)
+PLUS (271)
+MINUS (272)
+TIMES (273)
+DIVIDE (274)
+EQUAL (275)
+NEQUAL (276)
+LT (277)
+LE (278)
+GT (279)
+GE (280)
+AND (281)
+OR (282)
+ASSIGN (283)
+ARRAY (284)
+IF (285)
+THEN (286)
+ELSE (287)
+WHILE (288)
+FOR (289)
+TO (290)
+DO (291)
+LET (292)
+IN (293)
+END (294)
+OF (295)
+BREAK (296)
+NIL (297)
+FUNCTION (298)
+VAR (299)
+TYPE (300)
+IMPORT (301)
+PRIVATE (302)
+
+
+Não-terminais, com as regras aonde aparecem
+
+$accept (48)
+    à esquerda: 0
+exp (49)
+    à esquerda: 1, à direita: 0
+
+
+estado 0
+
+    0 $accept: . exp $end
+
+    ID  fazer shift, e ir para o estado 1
+
+    exp  ir para o estado 2
+
+
+estado 1
+
+    1 exp: ID .
+
+    $default  reduzir usando a regra 1 (exp)
+
+
+estado 2
+
+    0 $accept: exp . $end
+
+    $end  fazer shift, e ir para o estado 3
+
+
+estado 3
+
+    0 $accept: exp $end .
+
+    $default  aceite
