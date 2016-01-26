@@ -2,7 +2,7 @@
 
    Imprima algo assim:
 
-   Erro (linha: 11; coluna: 9): g possui 2 parâmetros e não 3 */
+   /* Erro (linha: 11; coluna: 9): g possui 2 parâmetros e não 3 */
 
  */
 let

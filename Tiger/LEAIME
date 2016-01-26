@@ -43,6 +43,6 @@
 
 - A nota final é a média ponderada:
 
-  (Léxico * 0.1) + (Sintático * 0.2) + (Semântico * 0.3) + (GeraçãoDeCódigo * 0.5)
+  (Léxico * 0.1) + (Sintático * 0.2) + (Semântico * 0.2) + (GeraçãoDeCódigo * 0.5)
 
 

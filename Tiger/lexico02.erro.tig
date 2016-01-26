@@ -1,7 +1,6 @@
-/* token ilegal */
+/* token ilegal  */
 let
-	var a_ := 0
-	var a := " "
+	1var a := 0
 in
 	0
 end
