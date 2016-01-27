@@ -1,5 +1,3 @@
-/* scanner for a toy Pascal-like language */
-  
 %{
 /* need this for the call to atof() below */
 #include <math.h>
@@ -15,14 +13,14 @@ int   coluna = 1;
 void adjust();
 
 %}
-  
+
 %x IN_STRING
 %x IN_COMMENT
-   
+
 DIGIT    [0-9]
 VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
 INTEGER  [0-9]+
-    
+
 %%
 
 <INITIAL>
@@ -55,15 +53,10 @@ array     { adjust(); return ARRAY     ; }
 if        { adjust(); return IF        ; }
 then      { adjust(); return THEN      ; }
 else      { adjust(); return ELSE      ; }
-while     { adjust(); return WHILE     ; }
-for       { adjust(); return FOR       ; }
-to        { adjust(); return TO        ; }
-do        { adjust(); return DO        ; }
 let       { adjust(); return LET       ; }
 in        { adjust(); return IN        ; }
 end       { adjust(); return END       ; }
 of        { adjust(); return OF        ; }
-break     { adjust(); return BREAK     ; }
 nil       { adjust(); return NIL       ; }
 function  { adjust(); return FUNCTION  ; }
 var       { adjust(); return VAR       ; }
@@ -72,7 +65,7 @@ import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
 {VARIAVEL}  { yylval.sval = strdup(yytext); adjust(); return ID    ; }
-     
+
 {DIGIT}+    { yylval.ival = atoi(yytext); adjust(); return INT     ; }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
@@ -80,26 +73,25 @@ primitive { adjust(); return PRIVATE   ; }
 <IN_COMMENT>{
    "/*" { contadorComentario++; }
    .    {}
-   "*/" { if (--contadorComentario == 0) { BEGIN(INITIAL); } }    
+   "*/" { if (--contadorComentario == 0) { BEGIN(INITIAL); } }
 }
 
 "\"" BEGIN(IN_STRING);
 
 <IN_STRING>{
-   "\"" { yylval.sval = strdup(string); return STRING; BEGIN(INITIAL); }	
+   "\"" { yylval.sval = strdup(string); return STRING; BEGIN(INITIAL); }
    .    {  }
 }
-   
-[ \t\n]+ { adjust(); } 
-     
+
+[ \t\n]+ { adjust(); }
+
 .  ;
 
 %%
-     
+
 int yywrap() {}
 
 void adjust(){
-   //Arrumar
    if (strcmp( yytext, "\n" ) == 0 ) {
       coluna = 1;
       linha++;
@@ -107,5 +99,5 @@ void adjust(){
       coluna += yyleng;
    }
 //   printf( "%d %d ", linha, coluna);
-   
+
 }
