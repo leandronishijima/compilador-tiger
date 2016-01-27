@@ -94,9 +94,6 @@ exp	:
     | ID LPAREN funcParametros RPAREN		        { $$=A_CallExp(EM_tokPos, S_Symbol($1), $3); }
     | lvalue ASSIGN exp				                { $$=A_AssignExp(EM_tokPos, $1, $3); }
     | ifexp 					                    { $$=$1; }
-    | WHILE exp DO exp				                { $$=A_WhileExp(EM_tokPos, $2, $4); }
-    | FOR ID ASSIGN exp TO exp DO exp		        { $$=A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8); }
-    | BREAK						                    { $$=A_BreakExp(EM_tokPos); }
     | LET decs IN sequence END			            { $$=A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
 ;
 
@@ -112,13 +109,16 @@ lvalue :
    	| ID LBRACK exp RBRACK	{ $$=A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
 ;
 
+/* Substituir por exp exp ? */
 sequence : exp sequencetail { $$=A_ExpList($1, $2); }
 ;
 
+/* ';' NÃO EXISTE MAIS NO TIGER FUNCIONAL
 sequencetail :
                                         { $$=NULL; }
     | SEMICOLON exp sequencetail	    { $$=A_ExpList($2, $3); }
 ;
+*/
 
 recordfield : ID EQUAL exp				{ $$=A_Efield(S_Symbol($1), $3); }
 ;
