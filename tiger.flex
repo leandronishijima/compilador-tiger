@@ -27,7 +27,6 @@ INTEGER  [0-9]+
 
 ","  { adjust(); return COMMA      ; }
 ":"  { adjust(); return COLON      ; }
-";"  { adjust(); return SEMICOLON  ; }
 "("  { adjust(); return LPAREN     ; }
 ")"  { adjust(); return RPAREN     ; }
 "["  { adjust(); return LBRACK     ; }
