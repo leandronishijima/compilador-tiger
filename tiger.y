@@ -109,16 +109,14 @@ lvalue :
    	| ID LBRACK exp RBRACK	{ $$=A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
 ;
 
-/* Substituir por exp exp ? */
 sequence : exp sequencetail { $$=A_ExpList($1, $2); }
 ;
 
-/* ';' NÃO EXISTE MAIS NO TIGER FUNCIONAL
 sequencetail :
                                         { $$=NULL; }
-    | SEMICOLON exp sequencetail	    { $$=A_ExpList($2, $3); }
+    | exp sequencetail	    { $$=A_ExpList($2, $3); }
 ;
-*/
+
 
 recordfield : ID EQUAL exp				{ $$=A_Efield(S_Symbol($1), $3); }
 ;
