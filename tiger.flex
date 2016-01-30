@@ -90,7 +90,7 @@ primitive { adjust(); return PRIVATE   ; }
 
 int yywrap() {}
 
-main() {
+int main() {
     yylex();
     return 0;
 }
