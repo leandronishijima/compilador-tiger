@@ -90,11 +90,6 @@ primitive { adjust(); return PRIVATE   ; }
 
 int yywrap() {}
 
-int main() {
-    yylex();
-    return 0;
-}
-
 void adjust(){
    if (strcmp( yytext, "\n" ) == 0 ) {
       coluna = 1;
