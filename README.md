@@ -12,6 +12,28 @@ $ ./compilador ../teste > teste.ll
 $ llc ../teste.ll				
 $ clang ../teste.s
 ```
+
+## Testar analisador lexico
+
+```sh
+$ flex tiger.flex
+$ gcc lex.yy.c -lfl
+$ ./a.out
+```
+
+### Adicionar no arquivo tiger.flex
+
+```c
+int main() {
+    yylex();
+    return 0;
+}
+```
+
+> alterar cada bloco de cada TOKEN para um printf 
+
+
+
 Tokens
 > tiger.flex
 
