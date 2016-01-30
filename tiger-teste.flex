@@ -63,9 +63,9 @@ type      { adjust();  printf("['type']");         return TYPE      ; }
 import    { adjust();  printf("['import']");       return IMPORT    ; }
 primitive { adjust();  printf("['primitive']");    return PRIVATE   ; }
 
-{VARIAVEL}  { yylval.sval = strdup(yytext); adjust(); return ID    ; }
+{VARIAVEL}  { yylval.sval = strdup(yytext); adjust(); printf("['id']"); return ID    ; }
 
-{DIGIT}+    { yylval.ival = atoi(yytext); adjust(); return INT     ; }
+{DIGIT}+    { yylval.ival = atoi(yytext); adjust(); printf("['int']");  return INT     ; }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
 
