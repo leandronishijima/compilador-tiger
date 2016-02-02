@@ -25,47 +25,47 @@ INTEGER  [0-9]+
 
 <INITIAL>
 
-","  { adjust(); printf("[',']");   return COMMA      ; }
-":"  { adjust(); printf("[':']");   return COLON      ; }
-"("  { adjust(); printf("['(']");   return LPAREN     ; }
-")"  { adjust(); printf("[')']");   return RPAREN     ; }
-"["  { adjust(); printf("['[']");   return LBRACK     ; }
-"]"  { adjust(); printf("[']']");   return RBRACK     ; }
-"{"  { adjust(); printf("['{']");   return LBRACE     ; }
-"}"  { adjust(); printf("['}']");   return RBRACE     ; }
-"."  { adjust(); printf("['.']");   return DOT        ; }
-"+"  { adjust(); printf("['+']");   return PLUS       ; }
-"-"  { adjust(); printf("['-']");   return MINUS      ; }
-"*"  { adjust(); printf("['*']");   return TIMES      ; }
-"/"  { adjust(); printf("['/']");   return DIVIDE     ; }
-"="  { adjust(); printf("['=']");   return EQUAL      ; }
-"<>" { adjust(); printf("['<>']");  return NEQUAL     ; }
-"<"  { adjust(); printf("['<']");   return LT         ; }
-"<=" { adjust(); printf("['<=']");  return LE         ; }
-">"  { adjust(); printf("['>']");   return GT         ; }
-">=" { adjust(); printf("['>=']");  return GE         ; }
-"&"  { adjust(); printf("['&']");   return AND        ; }
-"|"  { adjust(); printf("['|']");   return OR         ; }
-":=" { adjust(); printf("[':=']");  return ASSIGN     ; }
+","  { adjust(); printf("[',']");   }
+":"  { adjust(); printf("[':']");   }
+"("  { adjust(); printf("['(']");   }
+")"  { adjust(); printf("[')']");   }
+"["  { adjust(); printf("['[']");   }
+"]"  { adjust(); printf("[']']");   }
+"{"  { adjust(); printf("['{']");   }
+"}"  { adjust(); printf("['}']");   }
+"."  { adjust(); printf("['.']");   }
+"+"  { adjust(); printf("['+']");   }
+"-"  { adjust(); printf("['-']");   }
+"*"  { adjust(); printf("['*']");   }
+"/"  { adjust(); printf("['/']");   }
+"="  { adjust(); printf("['=']");   }
+"<>" { adjust(); printf("['<>']");  }
+"<"  { adjust(); printf("['<']");   }
+"<=" { adjust(); printf("['<=']");  }
+">"  { adjust(); printf("['>']");   }
+">=" { adjust(); printf("['>=']");  }
+"&"  { adjust(); printf("['&']");   }
+"|"  { adjust(); printf("['|']");   }
+":=" { adjust(); printf("[':=']");  }
 
-array     { adjust();  printf("['array']");        return ARRAY     ; }
-if        { adjust();  printf("['if']");           return IF        ; }
-then      { adjust();  printf("['then']");         return THEN      ; }
-else      { adjust();  printf("['else']");         return ELSE      ; }
-let       { adjust();  printf("['let']");          return LET       ; }
-in        { adjust();  printf("['in']");           return IN        ; }
-end       { adjust();  printf("['end']");          return END       ; }
-of        { adjust();  printf("['of']");           return OF        ; }
-nil       { adjust();  printf("['nil']");          return NIL       ; }
-function  { adjust();  printf("['function']");     return FUNCTION  ; }
-var       { adjust();  printf("['var']");          return VAR       ; }
-type      { adjust();  printf("['type']");         return TYPE      ; }
-import    { adjust();  printf("['import']");       return IMPORT    ; }
-primitive { adjust();  printf("['primitive']");    return PRIVATE   ; }
+array     { adjust();  printf("['array']");        }
+if        { adjust();  printf("['if']");           }
+then      { adjust();  printf("['then']");         }
+else      { adjust();  printf("['else']");         }
+let       { adjust();  printf("['let']");          }
+in        { adjust();  printf("['in']");           }
+end       { adjust();  printf("['end']");          }
+of        { adjust();  printf("['of']");           }
+nil       { adjust();  printf("['nil']");          }
+function  { adjust();  printf("['function']");     }
+var       { adjust();  printf("['var']");          }
+type      { adjust();  printf("['type']");         }
+import    { adjust();  printf("['import']");       }
+primitive { adjust();  printf("['primitive']");    }
 
-{VARIAVEL}  { adjust(); printf("['id']"); return ID    ; }
+{VARIAVEL}  { adjust(); printf("['id']"); }
 
-{DIGIT}+    { adjust(); printf("['int']");  return INT     ; }
+{DIGIT}+    { adjust(); printf("['int']");  }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
 
@@ -73,13 +73,15 @@ primitive { adjust();  printf("['primitive']");    return PRIVATE   ; }
    "/*" { contadorComentario++; }
    .    {}
    "*/" { if (--contadorComentario == 0) { BEGIN(INITIAL); } }
+   printf("['IN_COMMENT']");
 }
 
 "\"" BEGIN(IN_STRING);
 
 <IN_STRING>{
-   "\"" { return STRING; BEGIN(INITIAL); }
+   "\"" { BEGIN(INITIAL); }
    .    {  }
+   printf("['STRING']");
 }
 
 [ \t\n]+ { adjust(); }
