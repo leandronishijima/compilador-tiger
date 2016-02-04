@@ -30,8 +30,6 @@ int main() {
 }
 ```
 
-> alterar cada bloco de cada TOKEN para um printf 
-
 
 
 Tokens
