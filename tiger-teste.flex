@@ -19,6 +19,7 @@ void adjust();
 
 DIGIT    [0-9]
 VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
+VARIAVEL_INVALIDA [0-9._-]+[a-zA-Z0-9]+
 INTEGER  [0-9]+
 
 %%
@@ -64,6 +65,8 @@ import    { adjust();  printf("['import']");       }
 primitive { adjust();  printf("['primitive']");    }
 
 {VARIAVEL}  { adjust(); printf("['id']"); }
+
+{VARIAVEL_INVALIDA}  { adjust(); EM_error(EM_tokPos, "illegal token"); }
 
 {DIGIT}+    { adjust(); printf("['int']");  }
 
