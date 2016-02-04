@@ -27,28 +27,28 @@ INTEGER  [0-9]+
 
 <INITIAL>
 
-","  { adjust(); return COMMA      ; }
-":"  { adjust(); return COLON      ; }
-"("  { adjust(); return LPAREN     ; }
-")"  { adjust(); return RPAREN     ; }
-"["  { adjust(); return LBRACK     ; }
-"]"  { adjust(); return RBRACK     ; }
-"{"  { adjust(); return LBRACE     ; }
-"}"  { adjust(); return RBRACE     ; }
-"."  { adjust(); return DOT        ; }
-"+"  { adjust(); return PLUS       ; }
-"-"  { adjust(); return MINUS      ; }
-"*"  { adjust(); return TIMES      ; }
-"/"  { adjust(); return DIVIDE     ; }
-"="  { adjust(); return EQUAL      ; }
-"<>" { adjust(); return NEQUAL     ; }
-"<"  { adjust(); return LT         ; }
-"<=" { adjust(); return LE         ; }
-">"  { adjust(); return GT         ; }
-">=" { adjust(); return GE         ; }
-"&"  { adjust(); return AND        ; }
-"|"  { adjust(); return OR         ; }
-":=" { adjust(); return ASSIGN     ; }
+","       { adjust(); return COMMA     ; }
+":"       { adjust(); return COLON     ; }
+"("       { adjust(); return LPAREN    ; }
+")"       { adjust(); return RPAREN    ; }
+"["       { adjust(); return LBRACK    ; }
+"]"       { adjust(); return RBRACK    ; }
+"{"       { adjust(); return LBRACE    ; }
+"}"       { adjust(); return RBRACE    ; }
+"."       { adjust(); return DOT       ; }
+"+"       { adjust(); return PLUS      ; }
+"-"       { adjust(); return MINUS     ; }
+"*"       { adjust(); return TIMES     ; }
+"/"       { adjust(); return DIVIDE    ; }
+"="       { adjust(); return EQUAL     ; }
+"<>"      { adjust(); return NEQUAL    ; }
+"<"       { adjust(); return LT        ; }
+"<="      { adjust(); return LE        ; }
+">"       { adjust(); return GT        ; }
+">="      { adjust(); return GE        ; }
+"&"       { adjust(); return AND       ; }
+"|"       { adjust(); return OR        ; }
+":="      { adjust(); return ASSIGN    ; }
 
 array     { adjust(); return ARRAY     ; }
 if        { adjust(); return IF        ; }
@@ -65,13 +65,10 @@ type      { adjust(); return TYPE      ; }
 import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
-{VARIAVEL}  { yylval.sval = strdup(yytext); adjust(); return ID    ; }
-
+{VARIAVEL}                 { yylval.sval = strdup(yytext); adjust(); return ID    ; }
 {VARIAVEL_INVALIDA_ANTES}  { adjust(); printf("token inválido"); }
-
 {VARIAVEL_INVALIDA_DEPOIS} { adjust(); printf("token inválido"); }
-
-{DIGIT}+    { yylval.ival = atoi(yytext); adjust(); return INT     ; }
+{DIGIT}+                   { yylval.ival = atoi(yytext); adjust(); return INT     ; }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
 

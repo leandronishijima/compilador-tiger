@@ -21,7 +21,8 @@ void adjust();
 
 DIGIT    [0-9]
 VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
-VARIAVEL_INVALIDA [0-9._-]+[a-zA-Z0-9]+
+VARIAVEL_INVALIDA_ANTES [0-9._-]+[a-zA-Z0-9]+
+VARIAVEL_INVALIDA_DEPOIS [a-zA-Z]+[0-9.-_]+
 INTEGER  [0-9]+
 
 %%
@@ -67,9 +68,8 @@ import    { adjust();  printf("['import']");       }
 primitive { adjust();  printf("['primitive']");    }
 
 {VARIAVEL}  { adjust(); printf("['id']"); }
-
-{VARIAVEL_INVALIDA}  { adjust(); printf("token inválido"); }
-
+{VARIAVEL_INVALIDA_ANTES}  { adjust(); printf("token inválido"); }
+{VARIAVEL_INVALIDA_DEPOIS} { adjust(); printf("token inválido"); }
 {DIGIT}+    { adjust(); printf("['int']");  }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
