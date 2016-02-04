@@ -19,6 +19,7 @@ void adjust();
 
 DIGIT    [0-9]
 VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
+VARIAVEL_INVALIDA [0-9._-]+[a-zA-Z0-9]+
 INTEGER  [0-9]+
 
 %%
@@ -64,6 +65,8 @@ import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
 {VARIAVEL}  { yylval.sval = strdup(yytext); adjust(); return ID    ; }
+
+{VARIAVEL_INVALIDA}  { adjust(); printf("token inválido"); }
 
 {DIGIT}+    { yylval.ival = atoi(yytext); adjust(); return INT     ; }
 
