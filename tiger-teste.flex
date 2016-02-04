@@ -2,6 +2,8 @@
 /* need this for the call to atof() below */
 #include <math.h>
 #include "tiger.tab.h"
+#include "tokens.h"
+#include "errormsg.h"
 
 //extern YYSTYPE yylval;
 
