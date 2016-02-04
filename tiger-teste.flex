@@ -68,7 +68,7 @@ primitive { adjust();  printf("['primitive']");    }
 
 {VARIAVEL}  { adjust(); printf("['id']"); }
 
-{VARIAVEL_INVALIDA}  { adjust(); EM_error(EM_tokPos, "illegal token"); }
+{VARIAVEL_INVALIDA}  { adjust(); printf("token inválido"); }
 
 {DIGIT}+    { adjust(); printf("['int']");  }
 
