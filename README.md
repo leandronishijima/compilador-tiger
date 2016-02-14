@@ -8,6 +8,8 @@
 
 ## Compilação
 ```sh
+$ flex tiger.flex
+$ bison -d tiger.y
 $ gcc *.c -o compilador
 $ ./compilador Tiger/nome-do-arquivo.tig
 $ ./compilador ../teste > teste.ll
