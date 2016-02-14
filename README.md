@@ -22,23 +22,14 @@ $ gcc lex.yy.c -lfl
 $ ./a.out
 ```
 
-### Adicionar no arquivo tiger.flex
-
-```c
-int main() {
-    yylex();
-    return 0;
-}
-```
-
 Tokens
 > tiger.flex
+
+## Testar analisador sintático
 
 ```sh
 $ bison tiger.y
 ```
-
-## Testar analisador sintático
 
 Gramática
 > tiger.y
