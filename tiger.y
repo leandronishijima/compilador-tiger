@@ -1,15 +1,8 @@
 %{
 #include <stdio.h>
 #include "absyn.h"
-/*#include "errormsg.h"*/
 
 A_exp absyn_root;
-
-/*
-void yyerror(char *s){
-   EM_error(EM_tokPos, "%s", s);
-}
-*/
 
 %}
 
@@ -116,7 +109,7 @@ sequence : exp sequencetail { $$=A_ExpList($1, $2); }
 
 sequencetail :
                                         { $$=NULL; }
-    | exp sequencetail	    { $$=A_ExpList($2, $3); }
+    | exp sequencetail	                { $$=A_ExpList($1, $2); }
 ;
 
 
