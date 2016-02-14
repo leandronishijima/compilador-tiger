@@ -2,12 +2,12 @@
 /* need this for the call to atof() below */
 #include <math.h>
 #include "tiger.tab.h"
-/*#include "errormsg.h"*/
+#include "errormsg.h"
 
 extern YYSTYPE yylval;
 
 int   contadorComentario = 0;
-char* string = "";
+char string[1000];
 int   linha  = 1;
 int   coluna = 1;
 
@@ -67,26 +67,27 @@ import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
 {VARIAVEL}                 { yylval.sval = strdup(yytext); adjust(); return ID    ; }
-{VARIAVEL_INVALIDA_ANTES}  { adjust(); printf("token inválido"); }
-{VARIAVEL_INVALIDA_DEPOIS} { adjust(); printf("token inválido"); }
+{VARIAVEL_INVALIDA_ANTES}  { adjust(); EM_error(EM_tokPos, "token inválido"); }
+{VARIAVEL_INVALIDA_DEPOIS} { adjust(); EM_error(EM_tokPos, "token inválido"); }
 {DIGIT}+                   { yylval.ival = atoi(yytext); adjust(); return INT     ; }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
 
 <IN_COMMENT>{
    "/*" { contadorComentario++; }
+   \n   { adjust(); }
    .    {}
    "*/" { if (--contadorComentario == 0) { BEGIN(INITIAL); } }
 }
 
-"\"" BEGIN(IN_STRING);
+"\"" { strcat(string, yytext); BEGIN(IN_STRING); }
 
 <IN_STRING>{
-   "\"" { yylval.sval = strdup(string); return STRING; BEGIN(INITIAL); }
-   .    {  }
+   "\"" { strcat(string, yytext); yylval.sval = strdup(string); strcpy(string, ""); BEGIN(INITIAL); return STRING; }
+   .    { strcat(string, yytext); }
 }
 
-[ \t\n]+ { adjust(); }
+[ \t\n] { adjust(); }
 
 .  ;
 
@@ -96,11 +97,10 @@ int yywrap() {}
 
 void adjust(){
    if (strcmp( yytext, "\n" ) == 0 ) {
-      coluna = 1;
-      linha++;
+      // coluna = 1;
+      // linha++;
+      EM_newline();
    }else{
-      coluna += yyleng;
+      EM_tokPos += yyleng;
    }
-//   printf( "%d %d ", linha, coluna);
-
 }

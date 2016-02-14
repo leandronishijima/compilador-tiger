@@ -1,8 +1,15 @@
 %{
 #include <stdio.h>
 #include "absyn.h"
+#include "errormsg.h"
 
 A_exp absyn_root;
+
+//int EM_tokPos;
+
+void yyerror() {
+    EM_error(EM_tokPos, "errosintatico");
+}
 
 %}
 
@@ -113,7 +120,8 @@ sequencetail :
 ;
 
 
-recordfield : ID EQUAL exp				{ $$=A_Efield(S_Symbol($1), $3); }
+recordfield : 
+    ID EQUAL exp				{ $$=A_Efield(S_Symbol($1), $3); }
 ;
 
 recordtail : 						     { $$=NULL; }
