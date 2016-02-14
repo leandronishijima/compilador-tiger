@@ -9,6 +9,7 @@
 ## Compilação
 ```sh
 $ gcc *.c -o compilador
+$ ./compilador Tiger/nome-do-arquivo.tig
 $ ./compilador ../teste > teste.ll
 $ llc ../teste.ll				
 $ clang ../teste.s
@@ -28,7 +29,7 @@ Tokens
 ## Testar analisador sintático
 
 ```sh
-$ bison tiger.y
+$ bison -d tiger.y
 ```
 
 Gramática
