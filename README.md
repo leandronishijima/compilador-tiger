@@ -6,6 +6,7 @@
 
 # Comandos:
 
+## Compilação
 ```sh
 $ gcc *.c -o compilador
 $ ./compilador ../teste > teste.ll
@@ -30,10 +31,14 @@ int main() {
 }
 ```
 
-
-
 Tokens
 > tiger.flex
+
+```sh
+$ bison tiger.y
+```
+
+## Testar analisador sintático
 
 Gramática
 > tiger.y
