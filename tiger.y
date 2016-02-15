@@ -2,14 +2,9 @@
 #include <stdio.h>
 #include "absyn.h"
 #include "errormsg.h"
+#include "symbol.h"
 
 A_exp absyn_root;
-
-//int EM_tokPos;
-
-void yyerror() {
-    EM_error(EM_tokPos, "errosintatico");
-}
 
 %}
 
@@ -17,6 +12,7 @@ void yyerror() {
 %union {
 	int ival;
 	char* sval;
+	float fval;
 
 	struct A_var_ *A_var;
 	struct A_exp_ *A_exp;
@@ -38,38 +34,39 @@ void yyerror() {
 
 %token <sval> ID STRING
 %token <ival> INT
-%token COMMA COLON SEMICOLON LPAREN RPAREN LBRACK RBRACK
-%token LBRACE RBRACE DOT
+%token <ival> FLOAT
+%token COMMA COLON SEMICOLON LPAREN RPAREN LBRACK RBRACK 
+%token LBRACE RBRACE DOT 
 %token PLUS MINUS TIMES DIVIDE EQUAL NEQUAL LT LE GT GE
 %token AND OR ASSIGN
-%token ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF
+%token ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF 
 %token BREAK NIL
-%token FUNCTION VAR TYPE
+%token FUNCTION VAR TYPE 
 %token IMPORT PRIVATE
+%token FLECHINHA
 
-%type <A_exp> exp ifexp MathExp CompareExp BooleanExp
-%type <A_var> lvalue
-%type <A_efieldList> recordtail
+%type <A_exp> preExp exp ifExp orExp andExp BooleanExp plusMinusExp TimesDivideExp exps
+%type <A_var> lvalue 
+%type <A_efieldList> recordfields efieldList
 %type <A_efield> recordfield
-%type <A_expList> sequence sequencetail
+%type <A_expList> listExp
 %type <A_expList> funcParametros parametrosTail
 %type <A_decList> decs
-%type <A_dec> dec vardec fundec
-%type <A_nametyList> typedecs
+%type <A_dec> dec vardec
 %type <A_namety> typedec
-%type <A_ty> ty
-%type <A_fieldList> tyfields comma_tyfields
-%type <A_field> tyfield
+%type <A_nametyList> typedecs
+%type <A_fundec> fundec
+%type <A_fundecList> fundecs
+%type <A_ty> ty /* ty_list */
+%type <A_fieldList> tyfields fieldList
+%type <A_field> tyfield 
 
-/* operadores logico */
 %left OR
 %left AND
 
-/* operadores relacional */
 %left EQUAL NEQUAL
 %left GT LT GE LE
 
-/* operadores */
 %left PLUS MINUS
 %left TIMES DIVIDE
 
@@ -79,133 +76,171 @@ void yyerror() {
 
 %%
 
-program: exp		    				{ absyn_root=$1;}
+program: 
+	exp 											{ absyn_root=$1; }
 ;
 
-exp	:
-    NIL                                  		    { $$=A_NilExp(EM_tokPos); }
-    | INT						                    { $$=A_IntExp(EM_tokPos, $1); }
-    | STRING					                    { $$=A_StringExp(EM_tokPos, $1); }
-    | ID LBRACK exp RBRACK OF exp			        { $$=A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6); }
-    | ID LBRACE recordfield recordtail RBRACE	    { $$=A_RecordExp(EM_tokPos, S_Symbol($1), A_EfieldList($3, $4)); }
-    | lvalue					                    { $$=A_VarExp(EM_tokPos, $1); }
-    | MathExp					                    { $$=$1; }
-    | CompareExp					                { $$=$1; }
-    | BooleanExp					                { $$=$1; }
-    | LPAREN sequence LPAREN			            { $$=A_SeqExp(EM_tokPos, $2); }
-    | ID LPAREN funcParametros RPAREN		        { $$=A_CallExp(EM_tokPos, S_Symbol($1), $3); }
-    | lvalue ASSIGN exp				                { $$=A_AssignExp(EM_tokPos, $1, $3); }
-    | ifexp 					                    { $$=$1; }
-    | LET decs IN sequence END			            { $$=A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
+preExp : 
+	NIL 											{ $$=A_NilExp(EM_tokPos); }
+	| INT 											{ $$=A_IntExp(EM_tokPos, $1); }
+	| lvalue 										{ $$=A_VarExp(EM_tokPos, $1); }
+	| MINUS preExp 									{ $$=A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2); }
+	| ID LPAREN funcParametros RPAREN				{ $$=A_CallExp(EM_tokPos, S_Symbol($1), $3); }
+	| STRING 										{ $$=A_StringExp(EM_tokPos, $1); }
+	| exps 											{ $$=$1; }
+;
+
+exp	: 
+	ID LBRACK exp RBRACK OF exp						{ $$=A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6); }      
+	| ID LBRACE recordfields RBRACE					{ $$=A_RecordExp(EM_tokPos, S_Symbol($1), $3); }
+	| orExp											{ $$=$1; }
+	| ifExp 										{ $$=$1; }
+	| LET decs IN listExp END						{ $$=A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4)); }
+;
+
+exps : 
+	LPAREN listExp RPAREN 							{ $$=A_SeqExp(EM_tokPos, $2); }
+;
+
+listExp :
+													{ $$=NULL; }
+	| exp											{ $$=A_ExpList($1, NULL); }
+	| exp SEMICOLON listExp							{ $$=A_ExpList($1, $3); }
+;
+
+ifExp : 
+	IF exp THEN exp									{ $$=A_IfExp(EM_tokPos, $2, $4, NULL); } 
+	| IF exp THEN exp ELSE exp						{ $$=A_IfExp(EM_tokPos, $2, $4, $6); }
+;
+
+recordfields:
+ 													{ $$=NULL; }
+	| recordfield efieldList						{ $$=A_EfieldList($1, $2); }
+;
+
+recordfield: 
+	ID EQUAL exp									{ $$=A_Efield(EM_tokPos, S_Symbol($1), $3); }
+
+efieldList :
+													{ $$=NULL; }
+	| COMMA recordfield efieldList					{ $$=A_EfieldList($2, $3); }
 ;
 
 
-ifexp :
-    IF exp THEN exp				    { $$=A_IfExp(EM_tokPos, $2, $4, NULL); }
-    | IF exp THEN exp ELSE exp      { $$=A_IfExp(EM_tokPos, $2, $4, $6); }
+lvalue 	: 
+	ID						 						{ $$=A_SimpleVar(EM_tokPos, S_Symbol($1));}
+	| ID DOT ID										{ $$=A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3)); }
+	| ID LBRACK exp RBRACK							{ $$=A_SubVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
 ;
 
-lvalue :
-    ID						{ $$=A_SimpleVar(EM_tokPos, S_Symbol($1));}
-   	| ID DOT ID				{ $$=A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3)); }
-   	| ID LBRACK exp RBRACK	{ $$=A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
+BooleanExp : 
+	plusMinusExp 									{ $$=$1; }
+	| BooleanExp LE plusMinusExp  					{ $$=A_OpExp(EM_tokPos, A_leOp, $1, $3); }
+	| BooleanExp GE plusMinusExp  					{ $$=A_OpExp(EM_tokPos, A_geOp, $1, $3); }
+	| BooleanExp GT plusMinusExp  					{ $$=A_OpExp(EM_tokPos, A_gtOp, $1, $3); }
+	| BooleanExp LT plusMinusExp  					{ $$=A_OpExp(EM_tokPos, A_ltOp, $1, $3); }
+	| BooleanExp EQUAL plusMinusExp  				{ $$=A_OpExp(EM_tokPos, A_eqOp, $1, $3); }
+	| BooleanExp NEQUAL plusMinusExp 				{ $$=A_OpExp(EM_tokPos, A_neqOp, $1, $3); }
 ;
 
-sequence : exp sequencetail { $$=A_ExpList($1, $2); }
+plusMinusExp : 
+	TimesDivideExp 									{ $$=$1; }
+	| plusMinusExp PLUS TimesDivideExp 				{ $$=A_OpExp(EM_tokPos, A_plusOp, $1, $3); }
+	| plusMinusExp MINUS TimesDivideExp 			{ $$=A_OpExp(EM_tokPos, A_minusOp, $1, $3); }
 ;
 
-sequencetail :
-                                        { $$=NULL; }
-    | exp sequencetail	                { $$=A_ExpList($1, $2); }
+TimesDivideExp : 
+	preExp 											{ $$=$1; }
+	| TimesDivideExp TIMES preExp  					{ $$=A_OpExp(EM_tokPos, A_timesOp, $1, $3); }
+	| TimesDivideExp DIVIDE preExp 					{ $$=A_OpExp(EM_tokPos, A_divideOp, $1, $3); }
 ;
 
-
-recordfield : 
-    ID EQUAL exp				{ $$=A_Efield(S_Symbol($1), $3); }
+orExp:	
+	andExp											{ $$=$1; }
+	| orExp OR andExp 								{ $$=A_OpExp(EM_tokPos, A_orOp, $1, $3); }
 ;
 
-recordtail : 						     { $$=NULL; }
-    | COMMA recordfield recordtail		 { $$=A_EfieldList($2, $3); }
+andExp :	
+	BooleanExp										{ $$=$1; }
+	| andExp OR BooleanExp 							{ $$=A_OpExp(EM_tokPos, A_andOp, $1, $3); }
 ;
 
-funcParametros :
-                                    { $$=NULL; }
-    | exp parametrosTail		    { $$=A_ExpList($1, $2); }
+funcParametros:
+													{ $$=NULL; }
+	| exp parametrosTail							{ $$=A_ExpList($1, $2); }
+;
+ 
+parametrosTail:
+													{ $$=NULL; }
+	| COMMA exp parametrosTail						{ $$=A_ExpList($2, $3); }
+;
+		
+decs:
+ 													{ $$=NULL;}
+	| dec decs										{ $$=A_DecList($1, $2);}
 ;
 
-parametrosTail :
-                                    { $$=NULL; }
-	| COMMA exp parametrosTail		{ $$=A_ExpList($2, $3); }
+dec : 
+	vardec											{ $$=$1; }
+	| typedecs 										{ $$=A_TypeDec(EM_tokPos, $1); }
+	| fundecs										{ $$=A_FunctionDec(EM_tokPos, $1); }
 ;
 
-MathExp	:
-    MINUS exp					    { $$=A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2); }
-	| exp PLUS exp					{ $$=A_OpExp(EM_tokPos, A_plusOp, $1, $3); }
-	| exp MINUS exp					{ $$=A_OpExp(EM_tokPos, A_minusOp, $1, $3); }
-	| exp TIMES exp					{ $$=A_OpExp(EM_tokPos, A_timesOp, $1, $3); }
-	| exp DIVIDE exp				{ $$=A_OpExp(EM_tokPos, A_divideOp, $1, $3); }
+vardec 	: 
+	VAR ID COLON ID ASSIGN exp						{ $$=A_VarDec(EM_tokPos, S_Symbol($2), S_Symbol($4), $6); }
+	| VAR ID ASSIGN exp								{ $$=A_VarDec(EM_tokPos, S_Symbol($2), NULL, $4); }
 ;
 
-CompareExp :
-    exp EQUAL exp				    { $$=A_OpExp(EM_tokPos, A_eqOp, $1, $3); }
-	| exp NEQUAL exp				{ $$=A_OpExp(EM_tokPos, A_neqOp, $1, $3); }
-	| exp LT exp					{ $$=A_OpExp(EM_tokPos, A_ltOp, $1, $3); }
-	| exp LE exp					{ $$=A_OpExp(EM_tokPos, A_leOp, $1, $3); }
-	| exp GT exp					{ $$=A_OpExp(EM_tokPos, A_gtOp, $1, $3); }
-	| exp GE exp					{ $$=A_OpExp(EM_tokPos, A_geOp, $1, $3); }
+typedecs :
+	typedec											{ $$=A_NametyList($1, NULL); }
+	| typedec typedecs								{ $$=A_NametyList($1, $2); }
 ;
 
-BooleanExp :
-    exp AND exp				        { $$=A_OpExp(EM_tokPos, A_andOp, $1, $3); }
-	| exp OR exp					{ $$=A_OpExp(EM_tokPos, A_orOp, $1, $3); }
+typedec : 
+	TYPE ID EQUAL ty								{ $$=A_Namety(EM_tokPos, S_Symbol($2), $4); }
 ;
 
-decs :
-                                { $$=NULL;}
-	| dec decs					{ $$=A_DecList($1, $2);}
+ty 	: 
+	ID												{ $$=A_NameTy(EM_tokPos, S_Symbol($1)); }
+    | LBRACE tyfields RBRACE						{ $$=A_RecordTy(EM_tokPos, $2); }
+    | ARRAY OF ID									{ $$=A_ArrayTy(EM_tokPos, S_Symbol($3));}
+/*		| ty FLECHINHA ty																							{ $$=A_NameTy(EM_tokPos, S_Symbol($1));}
+		| LPAREN ty ty_list RPAREN FLECHINHA ty												{ $$=A_NameTy(EM_tokPos, S_Symbol($2));}
+		| LPAREN RPAREN FLECHINHA ty																	{ $$=A_NameTy(EM_tokPos, S_Symbol($4));}
+
+;
+*/
+/*
+ty_list :																													{ $$=NULL;}
+				| COMMA ty ty_list																				{ $$=A_NameTy(EM_tokPos, S_Symbol($2));}
+;
+*/
+tyfields:
+													{ $$=NULL; }
+    | tyfield fieldList								{ $$=A_FieldList($1, $2); }	
 ;
 
-dec :
-    vardec					    { $$=$1; }
-	| typedecs 					{ $$=A_TypeDec(EM_tokPos, $1); }
-    | fundec 					{ $$=$1; }
+tyfield	: 
+	ID COLON ID										{ $$=A_Field(EM_tokPos, S_Symbol($1), S_Symbol($3)); }
+;
+		
+fieldList:
+													{ $$=NULL; }
+	| COMMA tyfield fieldList						{ $$=A_FieldList($2, $3); }	
 ;
 
-typedecs:
-    typedec					    { $$=A_NametyList($1, NULL);}
-	| typedec typedecs			{ $$=A_NametyList($1, $2); }
+fundecs	: 
+	fundec											{ $$=A_FundecList($1, NULL);}
+	| fundec fundecs								{ $$=A_FundecList($1, $2); }
 ;
 
-typedec : TYPE ID EQUAL ty		{ $$=A_Namety(S_Symbol($2), $4); }
-;
-
-ty 	:
-    ID						    { $$=A_NameTy(EM_tokPos, S_Symbol($1)); }
-    | LBRACE tyfields RBRACE	{ $$=A_RecordTy(EM_tokPos, $2); }
-    | ARRAY OF ID				{ $$=A_ArrayTy(EM_tokPos, S_Symbol($3));}
-;
-
-tyfields :
-                                { $$=NULL; }
-	| tyfield comma_tyfields	{ $$=A_FieldList($1, $2); }
-;
-
-tyfield	: ID COLON ID			{ $$=A_Field(EM_tokPos, S_Symbol($1), S_Symbol($3)); }
-;
-
-comma_tyfields :
-                                    { $$=NULL; }
-	| COMMA tyfield comma_tyfields	{ $$=A_FieldList($2, $3); }
-;
-
-vardec :
-    VAR ID COLON ID ASSIGN exp		{ $$=A_VarDec(EM_tokPos, S_Symbol($2), S_Symbol($4), $6); }
-	| VAR ID ASSIGN exp				{ $$=A_VarDec(EM_tokPos, S_Symbol($2), NULL, $4); }
-;
-
-fundec :
-    FUNCTION ID LPAREN tyfields RPAREN COLON ID EQUAL exp	{ $$=A_FunctionDec(EM_tokPos, S_Symbol($2), $4, S_Symbol($7), $9); }
-	| FUNCTION ID LPAREN tyfields RPAREN EQUAL exp		    { $$=A_FunctionDec(EM_tokPos, S_Symbol($2), $4, NULL, $7); }
+fundec: 
+	FUNCTION ID LPAREN tyfields RPAREN COLON ID EQUAL exp		{ $$=A_Fundec(EM_tokPos, S_Symbol($2), $4, S_Symbol($7), $9); }
+	| FUNCTION ID LPAREN tyfields RPAREN EQUAL exp				{ $$=A_Fundec(EM_tokPos, S_Symbol($2), $4, NULL, $7); }
 ;
 
 %%
+
+void yyerror(char *msg) {
+	EM_error(EM_tokPos, "%s", msg);
+}

@@ -48,48 +48,50 @@ extern int yydebug;
     ID = 258,
     STRING = 259,
     INT = 260,
-    COMMA = 261,
-    COLON = 262,
-    SEMICOLON = 263,
-    LPAREN = 264,
-    RPAREN = 265,
-    LBRACK = 266,
-    RBRACK = 267,
-    LBRACE = 268,
-    RBRACE = 269,
-    DOT = 270,
-    PLUS = 271,
-    MINUS = 272,
-    TIMES = 273,
-    DIVIDE = 274,
-    EQUAL = 275,
-    NEQUAL = 276,
-    LT = 277,
-    LE = 278,
-    GT = 279,
-    GE = 280,
-    AND = 281,
-    OR = 282,
-    ASSIGN = 283,
-    ARRAY = 284,
-    IF = 285,
-    THEN = 286,
-    ELSE = 287,
-    WHILE = 288,
-    FOR = 289,
-    TO = 290,
-    DO = 291,
-    LET = 292,
-    IN = 293,
-    END = 294,
-    OF = 295,
-    BREAK = 296,
-    NIL = 297,
-    FUNCTION = 298,
-    VAR = 299,
-    TYPE = 300,
-    IMPORT = 301,
-    PRIVATE = 302
+    FLOAT = 261,
+    COMMA = 262,
+    COLON = 263,
+    SEMICOLON = 264,
+    LPAREN = 265,
+    RPAREN = 266,
+    LBRACK = 267,
+    RBRACK = 268,
+    LBRACE = 269,
+    RBRACE = 270,
+    DOT = 271,
+    PLUS = 272,
+    MINUS = 273,
+    TIMES = 274,
+    DIVIDE = 275,
+    EQUAL = 276,
+    NEQUAL = 277,
+    LT = 278,
+    LE = 279,
+    GT = 280,
+    GE = 281,
+    AND = 282,
+    OR = 283,
+    ASSIGN = 284,
+    ARRAY = 285,
+    IF = 286,
+    THEN = 287,
+    ELSE = 288,
+    WHILE = 289,
+    FOR = 290,
+    TO = 291,
+    DO = 292,
+    LET = 293,
+    IN = 294,
+    END = 295,
+    OF = 296,
+    BREAK = 297,
+    NIL = 298,
+    FUNCTION = 299,
+    VAR = 300,
+    TYPE = 301,
+    IMPORT = 302,
+    PRIVATE = 303,
+    FLECHINHA = 304
   };
 #endif
 
@@ -98,10 +100,11 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 17 "tiger.y" /* yacc.c:1909  */
+#line 12 "tiger.y" /* yacc.c:1909  */
 
 	int ival;
 	char* sval;
+	float fval;
 
 	struct A_var_ *A_var;
 	struct A_exp_ *A_exp;
@@ -121,7 +124,7 @@ union YYSTYPE
 
 	
 
-#line 125 "tiger.tab.h" /* yacc.c:1909  */
+#line 128 "tiger.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

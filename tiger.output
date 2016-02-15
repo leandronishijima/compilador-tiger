@@ -1,142 +1,1778 @@
 Terminais não utilizados na gramática
 
-   STRING
-   INT
-   COMMA
-   COLON
    SEMICOLON
-   LPAREN
-   RPAREN
-   LBRACK
-   RBRACK
-   LBRACE
-   RBRACE
-   DOT
-   PLUS
-   MINUS
-   TIMES
-   DIVIDE
-   EQUAL
-   NEQUAL
-   LT
-   LE
-   GT
-   GE
-   AND
-   OR
-   ASSIGN
-   ARRAY
-   IF
-   THEN
-   ELSE
    WHILE
    FOR
    TO
    DO
-   LET
-   IN
-   END
-   OF
    BREAK
-   NIL
-   FUNCTION
-   VAR
-   TYPE
    IMPORT
    PRIVATE
 
 
+Estado 1 conflitos: 1 de deslocamento/redução
+Estado 10 conflitos: 2 de deslocamento/redução
+Estado 14 conflitos: 6 de deslocamento/redução
+Estado 15 conflitos: 2 de deslocamento/redução
+Estado 16 conflitos: 2 de deslocamento/redução
+Estado 22 conflitos: 1 de deslocamento/redução
+Estado 32 conflitos: 1 de deslocamento/redução
+Estado 55 conflitos: 1 de deslocamento/redução
+
+
 Gramática
 
-    0 $accept: exp $end
+    0 $accept: program $end
 
-    1 exp: ID
+    1 program: exp
+
+    2 preExp: NIL
+    3       | INT
+    4       | STRING
+    5       | lvalue
+    6       | MINUS exp
+
+    7 exp: ID LBRACK exp RBRACK OF exp
+    8    | ID LBRACE recordfield recordtail RBRACE
+    9    | BooleanExp
+   10    | LPAREN sequence LPAREN
+   11    | ID LPAREN funcParametros RPAREN
+   12    | lvalue ASSIGN exp
+   13    | ifexp
+   14    | LET decs IN sequence END
+
+   15 ifexp: IF exp THEN exp
+   16      | IF exp THEN exp ELSE exp
+
+   17 lvalue: ID
+   18       | ID DOT ID
+   19       | ID LBRACK exp RBRACK
+
+   20 sequence: exp sequencetail
+
+   21 sequencetail: %empty
+   22             | exp sequencetail
+
+   23 recordfield: ID EQUAL exp
+
+   24 recordtail: %empty
+   25           | COMMA recordfield recordtail
+
+   26 funcParametros: %empty
+   27               | exp parametrosTail
+
+   28 parametrosTail: %empty
+   29               | COMMA exp parametrosTail
+
+   30 MathExp: MathExpTimesDivide
+   31        | MathExpTimesDivide PLUS MathExp
+   32        | MathExpTimesDivide MINUS MathExp
+
+   33 MathExpTimesDivide: preExp
+   34                   | preExp TIMES MathExpTimesDivide
+   35                   | preExp DIVIDE MathExpTimesDivide
+
+   36 CompareExp: MathExp
+   37           | MathExp EQUAL CompareExp
+   38           | MathExp NEQUAL CompareExp
+   39           | MathExp LT CompareExp
+   40           | MathExp LE CompareExp
+   41           | MathExp GT CompareExp
+   42           | MathExp GE CompareExp
+
+   43 BooleanExp: CompareExp
+   44           | CompareExp AND BooleanExp
+   45           | CompareExp OR BooleanExp
+
+   46 decs: %empty
+   47     | dec decs
+
+   48 dec: vardec
+   49    | typedecs
+   50    | fundec
+
+   51 typedecs: typedec
+   52         | typedec typedecs
+
+   53 typedec: TYPE ID EQUAL ty
+
+   54 ty: ID
+   55   | LBRACE tyfields RBRACE
+   56   | ARRAY OF ID
+
+   57 tyfields: %empty
+   58         | tyfield comma_tyfields
+
+   59 tyfield: ID COLON ID
+
+   60 comma_tyfields: %empty
+   61               | COMMA tyfield comma_tyfields
+
+   62 vardec: VAR ID COLON ID ASSIGN exp
+   63       | VAR ID ASSIGN exp
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQUAL exp
+   65       | FUNCTION ID LPAREN tyfields RPAREN EQUAL exp
 
 
-Terminais, com as regras aonde aparecem
+Terminais, com as regras onde eles aparecem
 
 $end (0) 0
 error (256)
-ID (258) 1
-STRING (259)
-INT (260)
-COMMA (261)
-COLON (262)
+ID (258) 7 8 11 17 18 19 23 53 54 56 59 62 63 64 65
+STRING (259) 4
+INT (260) 3
+COMMA (261) 25 29 61
+COLON (262) 59 62 64
 SEMICOLON (263)
-LPAREN (264)
-RPAREN (265)
-LBRACK (266)
-RBRACK (267)
-LBRACE (268)
-RBRACE (269)
-DOT (270)
-PLUS (271)
-MINUS (272)
-TIMES (273)
-DIVIDE (274)
-EQUAL (275)
-NEQUAL (276)
-LT (277)
-LE (278)
-GT (279)
-GE (280)
-AND (281)
-OR (282)
-ASSIGN (283)
-ARRAY (284)
-IF (285)
-THEN (286)
-ELSE (287)
+LPAREN (264) 10 11 64 65
+RPAREN (265) 11 64 65
+LBRACK (266) 7 19
+RBRACK (267) 7 19
+LBRACE (268) 8 55
+RBRACE (269) 8 55
+DOT (270) 18
+PLUS (271) 31
+MINUS (272) 6 32
+TIMES (273) 34
+DIVIDE (274) 35
+EQUAL (275) 23 37 53 64 65
+NEQUAL (276) 38
+LT (277) 39
+LE (278) 40
+GT (279) 41
+GE (280) 42
+AND (281) 44
+OR (282) 45
+ASSIGN (283) 12 62 63
+ARRAY (284) 56
+IF (285) 15 16
+THEN (286) 15 16
+ELSE (287) 16
 WHILE (288)
 FOR (289)
 TO (290)
 DO (291)
-LET (292)
-IN (293)
-END (294)
-OF (295)
+LET (292) 14
+IN (293) 14
+END (294) 14
+OF (295) 7 56
 BREAK (296)
-NIL (297)
-FUNCTION (298)
-VAR (299)
-TYPE (300)
+NIL (297) 2
+FUNCTION (298) 64 65
+VAR (299) 62 63
+TYPE (300) 53
 IMPORT (301)
 PRIVATE (302)
 
 
-Não-terminais, com as regras aonde aparecem
+Não-terminais com as regras onde eles aparecem
 
 $accept (48)
     à esquerda: 0
-exp (49)
+program (49)
     à esquerda: 1, à direita: 0
+preExp (50)
+    à esquerda: 2 3 4 5 6, à direita: 33 34 35
+exp (51)
+    à esquerda: 7 8 9 10 11 12 13 14, à direita: 1 6 7 12 15 16 19
+    20 22 23 27 29 62 63 64 65
+ifexp (52)
+    à esquerda: 15 16, à direita: 13
+lvalue (53)
+    à esquerda: 17 18 19, à direita: 5 12
+sequence (54)
+    à esquerda: 20, à direita: 10 14
+sequencetail (55)
+    à esquerda: 21 22, à direita: 20 22
+recordfield (56)
+    à esquerda: 23, à direita: 8 25
+recordtail (57)
+    à esquerda: 24 25, à direita: 8 25
+funcParametros (58)
+    à esquerda: 26 27, à direita: 11
+parametrosTail (59)
+    à esquerda: 28 29, à direita: 27 29
+MathExp (60)
+    à esquerda: 30 31 32, à direita: 31 32 36 37 38 39 40 41 42
+MathExpTimesDivide (61)
+    à esquerda: 33 34 35, à direita: 30 31 32 34 35
+CompareExp (62)
+    à esquerda: 36 37 38 39 40 41 42, à direita: 37 38 39 40 41 42
+    43 44 45
+BooleanExp (63)
+    à esquerda: 43 44 45, à direita: 9 44 45
+decs (64)
+    à esquerda: 46 47, à direita: 14 47
+dec (65)
+    à esquerda: 48 49 50, à direita: 47
+typedecs (66)
+    à esquerda: 51 52, à direita: 49 52
+typedec (67)
+    à esquerda: 53, à direita: 51 52
+ty (68)
+    à esquerda: 54 55 56, à direita: 53
+tyfields (69)
+    à esquerda: 57 58, à direita: 55 64 65
+tyfield (70)
+    à esquerda: 59, à direita: 58 61
+comma_tyfields (71)
+    à esquerda: 60 61, à direita: 58 61
+vardec (72)
+    à esquerda: 62 63, à direita: 48
+fundec (73)
+    à esquerda: 64 65, à direita: 50
 
 
-estado 0
+State 0
 
-    0 $accept: . exp $end
+    0 $accept: . program $end
 
-    ID  fazer shift, e ir para o estado 1
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
 
-    exp  ir para o estado 2
+    program             ir ao estado 9
+    preExp              ir ao estado 10
+    exp                 ir ao estado 11
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
 
 
-estado 1
+State 1
 
-    1 exp: ID .
+    7 exp: ID . LBRACK exp RBRACK OF exp
+    8    | ID . LBRACE recordfield recordtail RBRACE
+   11    | ID . LPAREN funcParametros RPAREN
+   17 lvalue: ID .
+   18       | ID . DOT ID
+   19       | ID . LBRACK exp RBRACK
 
-    $default  reduzir usando a regra 1 (exp)
+    LPAREN  deslocar, e ir ao estado 18
+    LBRACK  deslocar, e ir ao estado 19
+    LBRACE  deslocar, e ir ao estado 20
+    DOT     deslocar, e ir ao estado 21
+
+    LPAREN    [reduzir usando a regra 17 (lvalue)]
+    $padrão  reduzir usando a regra 17 (lvalue)
 
 
-estado 2
+State 2
 
-    0 $accept: exp . $end
+    4 preExp: STRING .
 
-    $end  fazer shift, e ir para o estado 3
+    $padrão  reduzir usando a regra 4 (preExp)
 
 
-estado 3
+State 3
 
-    0 $accept: exp $end .
+    3 preExp: INT .
 
-    $default  aceite
+    $padrão  reduzir usando a regra 3 (preExp)
+
+
+State 4
+
+   10 exp: LPAREN . sequence LPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 22
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    sequence            ir ao estado 23
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 5
+
+    6 preExp: MINUS . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 24
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 6
+
+   15 ifexp: IF . exp THEN exp
+   16      | IF . exp THEN exp ELSE exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 25
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 7
+
+   14 exp: LET . decs IN sequence END
+
+    FUNCTION  deslocar, e ir ao estado 26
+    VAR       deslocar, e ir ao estado 27
+    TYPE      deslocar, e ir ao estado 28
+
+    $padrão  reduzir usando a regra 46 (decs)
+
+    decs      ir ao estado 29
+    dec       ir ao estado 30
+    typedecs  ir ao estado 31
+    typedec   ir ao estado 32
+    vardec    ir ao estado 33
+    fundec    ir ao estado 34
+
+
+State 8
+
+    2 preExp: NIL .
+
+    $padrão  reduzir usando a regra 2 (preExp)
+
+
+State 9
+
+    0 $accept: program . $end
+
+    $end  deslocar, e ir ao estado 35
+
+
+State 10
+
+   33 MathExpTimesDivide: preExp .
+   34                   | preExp . TIMES MathExpTimesDivide
+   35                   | preExp . DIVIDE MathExpTimesDivide
+
+    TIMES   deslocar, e ir ao estado 36
+    DIVIDE  deslocar, e ir ao estado 37
+
+    TIMES     [reduzir usando a regra 33 (MathExpTimesDivide)]
+    DIVIDE    [reduzir usando a regra 33 (MathExpTimesDivide)]
+    $padrão  reduzir usando a regra 33 (MathExpTimesDivide)
+
+
+State 11
+
+    1 program: exp .
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+State 12
+
+   13 exp: ifexp .
+
+    $padrão  reduzir usando a regra 13 (exp)
+
+
+State 13
+
+    5 preExp: lvalue .
+   12 exp: lvalue . ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 38
+
+    $padrão  reduzir usando a regra 5 (preExp)
+
+
+State 14
+
+   36 CompareExp: MathExp .
+   37           | MathExp . EQUAL CompareExp
+   38           | MathExp . NEQUAL CompareExp
+   39           | MathExp . LT CompareExp
+   40           | MathExp . LE CompareExp
+   41           | MathExp . GT CompareExp
+   42           | MathExp . GE CompareExp
+
+    EQUAL   deslocar, e ir ao estado 39
+    NEQUAL  deslocar, e ir ao estado 40
+    LT      deslocar, e ir ao estado 41
+    LE      deslocar, e ir ao estado 42
+    GT      deslocar, e ir ao estado 43
+    GE      deslocar, e ir ao estado 44
+
+    EQUAL     [reduzir usando a regra 36 (CompareExp)]
+    NEQUAL    [reduzir usando a regra 36 (CompareExp)]
+    LT        [reduzir usando a regra 36 (CompareExp)]
+    LE        [reduzir usando a regra 36 (CompareExp)]
+    GT        [reduzir usando a regra 36 (CompareExp)]
+    GE        [reduzir usando a regra 36 (CompareExp)]
+    $padrão  reduzir usando a regra 36 (CompareExp)
+
+
+State 15
+
+   30 MathExp: MathExpTimesDivide .
+   31        | MathExpTimesDivide . PLUS MathExp
+   32        | MathExpTimesDivide . MINUS MathExp
+
+    PLUS   deslocar, e ir ao estado 45
+    MINUS  deslocar, e ir ao estado 46
+
+    PLUS      [reduzir usando a regra 30 (MathExp)]
+    MINUS     [reduzir usando a regra 30 (MathExp)]
+    $padrão  reduzir usando a regra 30 (MathExp)
+
+
+State 16
+
+   43 BooleanExp: CompareExp .
+   44           | CompareExp . AND BooleanExp
+   45           | CompareExp . OR BooleanExp
+
+    AND  deslocar, e ir ao estado 47
+    OR   deslocar, e ir ao estado 48
+
+    AND       [reduzir usando a regra 43 (BooleanExp)]
+    OR        [reduzir usando a regra 43 (BooleanExp)]
+    $padrão  reduzir usando a regra 43 (BooleanExp)
+
+
+State 17
+
+    9 exp: BooleanExp .
+
+    $padrão  reduzir usando a regra 9 (exp)
+
+
+State 18
+
+   11 exp: ID LPAREN . funcParametros RPAREN
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    $padrão  reduzir usando a regra 26 (funcParametros)
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 49
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    funcParametros      ir ao estado 50
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 19
+
+    7 exp: ID LBRACK . exp RBRACK OF exp
+   19 lvalue: ID LBRACK . exp RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 51
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 20
+
+    8 exp: ID LBRACE . recordfield recordtail RBRACE
+
+    ID  deslocar, e ir ao estado 52
+
+    recordfield  ir ao estado 53
+
+
+State 21
+
+   18 lvalue: ID DOT . ID
+
+    ID  deslocar, e ir ao estado 54
+
+
+State 22
+
+   20 sequence: exp . sequencetail
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    LPAREN    [reduzir usando a regra 21 (sequencetail)]
+    $padrão  reduzir usando a regra 21 (sequencetail)
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 55
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    sequencetail        ir ao estado 56
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 23
+
+   10 exp: LPAREN sequence . LPAREN
+
+    LPAREN  deslocar, e ir ao estado 57
+
+
+State 24
+
+    6 preExp: MINUS exp .
+
+    $padrão  reduzir usando a regra 6 (preExp)
+
+
+State 25
+
+   15 ifexp: IF exp . THEN exp
+   16      | IF exp . THEN exp ELSE exp
+
+    THEN  deslocar, e ir ao estado 58
+
+
+State 26
+
+   64 fundec: FUNCTION . ID LPAREN tyfields RPAREN COLON ID EQUAL exp
+   65       | FUNCTION . ID LPAREN tyfields RPAREN EQUAL exp
+
+    ID  deslocar, e ir ao estado 59
+
+
+State 27
+
+   62 vardec: VAR . ID COLON ID ASSIGN exp
+   63       | VAR . ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 60
+
+
+State 28
+
+   53 typedec: TYPE . ID EQUAL ty
+
+    ID  deslocar, e ir ao estado 61
+
+
+State 29
+
+   14 exp: LET decs . IN sequence END
+
+    IN  deslocar, e ir ao estado 62
+
+
+State 30
+
+   47 decs: dec . decs
+
+    FUNCTION  deslocar, e ir ao estado 26
+    VAR       deslocar, e ir ao estado 27
+    TYPE      deslocar, e ir ao estado 28
+
+    $padrão  reduzir usando a regra 46 (decs)
+
+    decs      ir ao estado 63
+    dec       ir ao estado 30
+    typedecs  ir ao estado 31
+    typedec   ir ao estado 32
+    vardec    ir ao estado 33
+    fundec    ir ao estado 34
+
+
+State 31
+
+   49 dec: typedecs .
+
+    $padrão  reduzir usando a regra 49 (dec)
+
+
+State 32
+
+   51 typedecs: typedec .
+   52         | typedec . typedecs
+
+    TYPE  deslocar, e ir ao estado 28
+
+    TYPE      [reduzir usando a regra 51 (typedecs)]
+    $padrão  reduzir usando a regra 51 (typedecs)
+
+    typedecs  ir ao estado 64
+    typedec   ir ao estado 32
+
+
+State 33
+
+   48 dec: vardec .
+
+    $padrão  reduzir usando a regra 48 (dec)
+
+
+State 34
+
+   50 dec: fundec .
+
+    $padrão  reduzir usando a regra 50 (dec)
+
+
+State 35
+
+    0 $accept: program $end .
+
+    $padrão  aceitar
+
+
+State 36
+
+   34 MathExpTimesDivide: preExp TIMES . MathExpTimesDivide
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExpTimesDivide  ir ao estado 67
+
+
+State 37
+
+   35 MathExpTimesDivide: preExp DIVIDE . MathExpTimesDivide
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExpTimesDivide  ir ao estado 68
+
+
+State 38
+
+   12 exp: lvalue ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 69
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 39
+
+   37 CompareExp: MathExp EQUAL . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 70
+
+
+State 40
+
+   38 CompareExp: MathExp NEQUAL . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 71
+
+
+State 41
+
+   39 CompareExp: MathExp LT . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 72
+
+
+State 42
+
+   40 CompareExp: MathExp LE . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 73
+
+
+State 43
+
+   41 CompareExp: MathExp GT . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 74
+
+
+State 44
+
+   42 CompareExp: MathExp GE . CompareExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 75
+
+
+State 45
+
+   31 MathExp: MathExpTimesDivide PLUS . MathExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 76
+    MathExpTimesDivide  ir ao estado 15
+
+
+State 46
+
+   32 MathExp: MathExpTimesDivide MINUS . MathExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 77
+    MathExpTimesDivide  ir ao estado 15
+
+
+State 47
+
+   44 BooleanExp: CompareExp AND . BooleanExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 78
+
+
+State 48
+
+   45 BooleanExp: CompareExp OR . BooleanExp
+
+    ID      deslocar, e ir ao estado 65
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    MINUS   deslocar, e ir ao estado 5
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    lvalue              ir ao estado 66
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 79
+
+
+State 49
+
+   27 funcParametros: exp . parametrosTail
+
+    COMMA  deslocar, e ir ao estado 80
+
+    $padrão  reduzir usando a regra 28 (parametrosTail)
+
+    parametrosTail  ir ao estado 81
+
+
+State 50
+
+   11 exp: ID LPAREN funcParametros . RPAREN
+
+    RPAREN  deslocar, e ir ao estado 82
+
+
+State 51
+
+    7 exp: ID LBRACK exp . RBRACK OF exp
+   19 lvalue: ID LBRACK exp . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 83
+
+
+State 52
+
+   23 recordfield: ID . EQUAL exp
+
+    EQUAL  deslocar, e ir ao estado 84
+
+
+State 53
+
+    8 exp: ID LBRACE recordfield . recordtail RBRACE
+
+    COMMA  deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 24 (recordtail)
+
+    recordtail  ir ao estado 86
+
+
+State 54
+
+   18 lvalue: ID DOT ID .
+
+    $padrão  reduzir usando a regra 18 (lvalue)
+
+
+State 55
+
+   22 sequencetail: exp . sequencetail
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    LPAREN    [reduzir usando a regra 21 (sequencetail)]
+    $padrão  reduzir usando a regra 21 (sequencetail)
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 55
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    sequencetail        ir ao estado 87
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 56
+
+   20 sequence: exp sequencetail .
+
+    $padrão  reduzir usando a regra 20 (sequence)
+
+
+State 57
+
+   10 exp: LPAREN sequence LPAREN .
+
+    $padrão  reduzir usando a regra 10 (exp)
+
+
+State 58
+
+   15 ifexp: IF exp THEN . exp
+   16      | IF exp THEN . exp ELSE exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 88
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 59
+
+   64 fundec: FUNCTION ID . LPAREN tyfields RPAREN COLON ID EQUAL exp
+   65       | FUNCTION ID . LPAREN tyfields RPAREN EQUAL exp
+
+    LPAREN  deslocar, e ir ao estado 89
+
+
+State 60
+
+   62 vardec: VAR ID . COLON ID ASSIGN exp
+   63       | VAR ID . ASSIGN exp
+
+    COLON   deslocar, e ir ao estado 90
+    ASSIGN  deslocar, e ir ao estado 91
+
+
+State 61
+
+   53 typedec: TYPE ID . EQUAL ty
+
+    EQUAL  deslocar, e ir ao estado 92
+
+
+State 62
+
+   14 exp: LET decs IN . sequence END
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 22
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    sequence            ir ao estado 93
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 63
+
+   47 decs: dec decs .
+
+    $padrão  reduzir usando a regra 47 (decs)
+
+
+State 64
+
+   52 typedecs: typedec typedecs .
+
+    $padrão  reduzir usando a regra 52 (typedecs)
+
+
+State 65
+
+   17 lvalue: ID .
+   18       | ID . DOT ID
+   19       | ID . LBRACK exp RBRACK
+
+    LBRACK  deslocar, e ir ao estado 94
+    DOT     deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 17 (lvalue)
+
+
+State 66
+
+    5 preExp: lvalue .
+
+    $padrão  reduzir usando a regra 5 (preExp)
+
+
+State 67
+
+   34 MathExpTimesDivide: preExp TIMES MathExpTimesDivide .
+
+    $padrão  reduzir usando a regra 34 (MathExpTimesDivide)
+
+
+State 68
+
+   35 MathExpTimesDivide: preExp DIVIDE MathExpTimesDivide .
+
+    $padrão  reduzir usando a regra 35 (MathExpTimesDivide)
+
+
+State 69
+
+   12 exp: lvalue ASSIGN exp .
+
+    $padrão  reduzir usando a regra 12 (exp)
+
+
+State 70
+
+   37 CompareExp: MathExp EQUAL CompareExp .
+
+    $padrão  reduzir usando a regra 37 (CompareExp)
+
+
+State 71
+
+   38 CompareExp: MathExp NEQUAL CompareExp .
+
+    $padrão  reduzir usando a regra 38 (CompareExp)
+
+
+State 72
+
+   39 CompareExp: MathExp LT CompareExp .
+
+    $padrão  reduzir usando a regra 39 (CompareExp)
+
+
+State 73
+
+   40 CompareExp: MathExp LE CompareExp .
+
+    $padrão  reduzir usando a regra 40 (CompareExp)
+
+
+State 74
+
+   41 CompareExp: MathExp GT CompareExp .
+
+    $padrão  reduzir usando a regra 41 (CompareExp)
+
+
+State 75
+
+   42 CompareExp: MathExp GE CompareExp .
+
+    $padrão  reduzir usando a regra 42 (CompareExp)
+
+
+State 76
+
+   31 MathExp: MathExpTimesDivide PLUS MathExp .
+
+    $padrão  reduzir usando a regra 31 (MathExp)
+
+
+State 77
+
+   32 MathExp: MathExpTimesDivide MINUS MathExp .
+
+    $padrão  reduzir usando a regra 32 (MathExp)
+
+
+State 78
+
+   44 BooleanExp: CompareExp AND BooleanExp .
+
+    $padrão  reduzir usando a regra 44 (BooleanExp)
+
+
+State 79
+
+   45 BooleanExp: CompareExp OR BooleanExp .
+
+    $padrão  reduzir usando a regra 45 (BooleanExp)
+
+
+State 80
+
+   29 parametrosTail: COMMA . exp parametrosTail
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 95
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 81
+
+   27 funcParametros: exp parametrosTail .
+
+    $padrão  reduzir usando a regra 27 (funcParametros)
+
+
+State 82
+
+   11 exp: ID LPAREN funcParametros RPAREN .
+
+    $padrão  reduzir usando a regra 11 (exp)
+
+
+State 83
+
+    7 exp: ID LBRACK exp RBRACK . OF exp
+   19 lvalue: ID LBRACK exp RBRACK .
+
+    OF  deslocar, e ir ao estado 96
+
+    $padrão  reduzir usando a regra 19 (lvalue)
+
+
+State 84
+
+   23 recordfield: ID EQUAL . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 97
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 85
+
+   25 recordtail: COMMA . recordfield recordtail
+
+    ID  deslocar, e ir ao estado 52
+
+    recordfield  ir ao estado 98
+
+
+State 86
+
+    8 exp: ID LBRACE recordfield recordtail . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 99
+
+
+State 87
+
+   22 sequencetail: exp sequencetail .
+
+    $padrão  reduzir usando a regra 22 (sequencetail)
+
+
+State 88
+
+   15 ifexp: IF exp THEN exp .
+   16      | IF exp THEN exp . ELSE exp
+
+    ELSE  deslocar, e ir ao estado 100
+
+    $padrão  reduzir usando a regra 15 (ifexp)
+
+
+State 89
+
+   64 fundec: FUNCTION ID LPAREN . tyfields RPAREN COLON ID EQUAL exp
+   65       | FUNCTION ID LPAREN . tyfields RPAREN EQUAL exp
+
+    ID  deslocar, e ir ao estado 101
+
+    $padrão  reduzir usando a regra 57 (tyfields)
+
+    tyfields  ir ao estado 102
+    tyfield   ir ao estado 103
+
+
+State 90
+
+   62 vardec: VAR ID COLON . ID ASSIGN exp
+
+    ID  deslocar, e ir ao estado 104
+
+
+State 91
+
+   63 vardec: VAR ID ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 105
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 92
+
+   53 typedec: TYPE ID EQUAL . ty
+
+    ID      deslocar, e ir ao estado 106
+    LBRACE  deslocar, e ir ao estado 107
+    ARRAY   deslocar, e ir ao estado 108
+
+    ty  ir ao estado 109
+
+
+State 93
+
+   14 exp: LET decs IN sequence . END
+
+    END  deslocar, e ir ao estado 110
+
+
+State 94
+
+   19 lvalue: ID LBRACK . exp RBRACK
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 111
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 95
+
+   29 parametrosTail: COMMA exp . parametrosTail
+
+    COMMA  deslocar, e ir ao estado 80
+
+    $padrão  reduzir usando a regra 28 (parametrosTail)
+
+    parametrosTail  ir ao estado 112
+
+
+State 96
+
+    7 exp: ID LBRACK exp RBRACK OF . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 113
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 97
+
+   23 recordfield: ID EQUAL exp .
+
+    $padrão  reduzir usando a regra 23 (recordfield)
+
+
+State 98
+
+   25 recordtail: COMMA recordfield . recordtail
+
+    COMMA  deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 24 (recordtail)
+
+    recordtail  ir ao estado 114
+
+
+State 99
+
+    8 exp: ID LBRACE recordfield recordtail RBRACE .
+
+    $padrão  reduzir usando a regra 8 (exp)
+
+
+State 100
+
+   16 ifexp: IF exp THEN exp ELSE . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 115
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 101
+
+   59 tyfield: ID . COLON ID
+
+    COLON  deslocar, e ir ao estado 116
+
+
+State 102
+
+   64 fundec: FUNCTION ID LPAREN tyfields . RPAREN COLON ID EQUAL exp
+   65       | FUNCTION ID LPAREN tyfields . RPAREN EQUAL exp
+
+    RPAREN  deslocar, e ir ao estado 117
+
+
+State 103
+
+   58 tyfields: tyfield . comma_tyfields
+
+    COMMA  deslocar, e ir ao estado 118
+
+    $padrão  reduzir usando a regra 60 (comma_tyfields)
+
+    comma_tyfields  ir ao estado 119
+
+
+State 104
+
+   62 vardec: VAR ID COLON ID . ASSIGN exp
+
+    ASSIGN  deslocar, e ir ao estado 120
+
+
+State 105
+
+   63 vardec: VAR ID ASSIGN exp .
+
+    $padrão  reduzir usando a regra 63 (vardec)
+
+
+State 106
+
+   54 ty: ID .
+
+    $padrão  reduzir usando a regra 54 (ty)
+
+
+State 107
+
+   55 ty: LBRACE . tyfields RBRACE
+
+    ID  deslocar, e ir ao estado 101
+
+    $padrão  reduzir usando a regra 57 (tyfields)
+
+    tyfields  ir ao estado 121
+    tyfield   ir ao estado 103
+
+
+State 108
+
+   56 ty: ARRAY . OF ID
+
+    OF  deslocar, e ir ao estado 122
+
+
+State 109
+
+   53 typedec: TYPE ID EQUAL ty .
+
+    $padrão  reduzir usando a regra 53 (typedec)
+
+
+State 110
+
+   14 exp: LET decs IN sequence END .
+
+    $padrão  reduzir usando a regra 14 (exp)
+
+
+State 111
+
+   19 lvalue: ID LBRACK exp . RBRACK
+
+    RBRACK  deslocar, e ir ao estado 123
+
+
+State 112
+
+   29 parametrosTail: COMMA exp parametrosTail .
+
+    $padrão  reduzir usando a regra 29 (parametrosTail)
+
+
+State 113
+
+    7 exp: ID LBRACK exp RBRACK OF exp .
+
+    $padrão  reduzir usando a regra 7 (exp)
+
+
+State 114
+
+   25 recordtail: COMMA recordfield recordtail .
+
+    $padrão  reduzir usando a regra 25 (recordtail)
+
+
+State 115
+
+   16 ifexp: IF exp THEN exp ELSE exp .
+
+    $padrão  reduzir usando a regra 16 (ifexp)
+
+
+State 116
+
+   59 tyfield: ID COLON . ID
+
+    ID  deslocar, e ir ao estado 124
+
+
+State 117
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN . COLON ID EQUAL exp
+   65       | FUNCTION ID LPAREN tyfields RPAREN . EQUAL exp
+
+    COLON  deslocar, e ir ao estado 125
+    EQUAL  deslocar, e ir ao estado 126
+
+
+State 118
+
+   61 comma_tyfields: COMMA . tyfield comma_tyfields
+
+    ID  deslocar, e ir ao estado 101
+
+    tyfield  ir ao estado 127
+
+
+State 119
+
+   58 tyfields: tyfield comma_tyfields .
+
+    $padrão  reduzir usando a regra 58 (tyfields)
+
+
+State 120
+
+   62 vardec: VAR ID COLON ID ASSIGN . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 128
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 121
+
+   55 ty: LBRACE tyfields . RBRACE
+
+    RBRACE  deslocar, e ir ao estado 129
+
+
+State 122
+
+   56 ty: ARRAY OF . ID
+
+    ID  deslocar, e ir ao estado 130
+
+
+State 123
+
+   19 lvalue: ID LBRACK exp RBRACK .
+
+    $padrão  reduzir usando a regra 19 (lvalue)
+
+
+State 124
+
+   59 tyfield: ID COLON ID .
+
+    $padrão  reduzir usando a regra 59 (tyfield)
+
+
+State 125
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON . ID EQUAL exp
+
+    ID  deslocar, e ir ao estado 131
+
+
+State 126
+
+   65 fundec: FUNCTION ID LPAREN tyfields RPAREN EQUAL . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 132
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 127
+
+   61 comma_tyfields: COMMA tyfield . comma_tyfields
+
+    COMMA  deslocar, e ir ao estado 118
+
+    $padrão  reduzir usando a regra 60 (comma_tyfields)
+
+    comma_tyfields  ir ao estado 133
+
+
+State 128
+
+   62 vardec: VAR ID COLON ID ASSIGN exp .
+
+    $padrão  reduzir usando a regra 62 (vardec)
+
+
+State 129
+
+   55 ty: LBRACE tyfields RBRACE .
+
+    $padrão  reduzir usando a regra 55 (ty)
+
+
+State 130
+
+   56 ty: ARRAY OF ID .
+
+    $padrão  reduzir usando a regra 56 (ty)
+
+
+State 131
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID . EQUAL exp
+
+    EQUAL  deslocar, e ir ao estado 134
+
+
+State 132
+
+   65 fundec: FUNCTION ID LPAREN tyfields RPAREN EQUAL exp .
+
+    $padrão  reduzir usando a regra 65 (fundec)
+
+
+State 133
+
+   61 comma_tyfields: COMMA tyfield comma_tyfields .
+
+    $padrão  reduzir usando a regra 61 (comma_tyfields)
+
+
+State 134
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQUAL . exp
+
+    ID      deslocar, e ir ao estado 1
+    STRING  deslocar, e ir ao estado 2
+    INT     deslocar, e ir ao estado 3
+    LPAREN  deslocar, e ir ao estado 4
+    MINUS   deslocar, e ir ao estado 5
+    IF      deslocar, e ir ao estado 6
+    LET     deslocar, e ir ao estado 7
+    NIL     deslocar, e ir ao estado 8
+
+    preExp              ir ao estado 10
+    exp                 ir ao estado 135
+    ifexp               ir ao estado 12
+    lvalue              ir ao estado 13
+    MathExp             ir ao estado 14
+    MathExpTimesDivide  ir ao estado 15
+    CompareExp          ir ao estado 16
+    BooleanExp          ir ao estado 17
+
+
+State 135
+
+   64 fundec: FUNCTION ID LPAREN tyfields RPAREN COLON ID EQUAL exp .
+
+    $padrão  reduzir usando a regra 64 (fundec)

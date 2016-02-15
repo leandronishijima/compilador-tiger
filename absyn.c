@@ -166,6 +166,7 @@ A_exp A_ArrayExp(A_pos pos, S_symbol typ, A_exp size, A_exp init){
    return p;
 }
 
+/*
 A_dec A_FunctionDec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body){
    A_dec p = checked_malloc(sizeof(*p));
    p->pos=pos;
@@ -175,7 +176,8 @@ A_dec A_FunctionDec(A_pos pos, S_symbol name, A_fieldList params, S_symbol resul
    p->body=body;
    return p;
 }
-/*
+*/
+
 A_dec A_FunctionDec(A_pos pos, A_fundecList function){
    A_dec p = checked_malloc(sizeof(*p));
    p->kind=A_functionDec;
@@ -183,7 +185,7 @@ A_dec A_FunctionDec(A_pos pos, A_fundecList function){
    p->u.function=function;
    return p;
 }
-*/
+
 A_dec A_VarDec(A_pos pos, S_symbol var, S_symbol typ, A_exp init){
    A_dec p = checked_malloc(sizeof(*p));
    p->kind=A_varDec;
@@ -249,7 +251,7 @@ A_expList A_ExpList(A_exp head, A_expList tail){
    p->tail=tail;
    return p;
 }
-/*
+
 A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body){
    A_fundec p = checked_malloc(sizeof(*p));
    p->pos=pos;
@@ -259,15 +261,15 @@ A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result,
    p->body=body;
    return p;
 }
-*/
-/*
+
+
 A_fundecList A_FundecList(A_fundec head, A_fundecList tail){
    A_fundecList p = checked_malloc(sizeof(*p));
    p->head=head;
    p->tail=tail;
    return p;
 }
-*/
+
 A_decList A_DecList(A_dec head, A_decList tail){
    A_decList p = checked_malloc(sizeof(*p));
    p->head=head;
