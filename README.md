@@ -38,7 +38,7 @@ $ bison -d tiger.y
 Gramática
 > tiger.y
 
-# Analisador semântico
+## Analisador semântico
 > semantic.c
 
  [compiler-refs]: <http://www.cs.princeton.edu/~appel/modern/c/project.html>
