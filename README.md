@@ -3,6 +3,7 @@
 # Utils
   - [Tiger compiler modules for programming exercises][compiler-refs]
   - [Tiger reference language][tiger-docs]
+  - [Manual LLVM][llvm-docs]
 
 # Comandos:
 
@@ -40,3 +41,4 @@ Gramática
 
  [compiler-refs]: <http://www.cs.princeton.edu/~appel/modern/c/project.html>
  [tiger-docs]: <https://www.lrde.epita.fr/~tiger/tiger.html>
+ [llvm-docs]: <http://llvm.org/docs/LangRef.html>
