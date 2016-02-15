@@ -18,7 +18,7 @@ $ llc ../teste.ll
 $ clang ../teste.s
 ```
 
-## Testar analisador lexico
+## Analisador léxico
 
 ```sh
 $ flex tiger.flex
@@ -29,7 +29,7 @@ $ ./a.out
 Tokens
 > tiger.flex
 
-## Testar analisador sintático
+## Analisador sintático
 
 ```sh
 $ bison -d tiger.y
@@ -38,6 +38,8 @@ $ bison -d tiger.y
 Gramática
 > tiger.y
 
+# Analisador semântico
+> semantic.c
 
  [compiler-refs]: <http://www.cs.princeton.edu/~appel/modern/c/project.html>
  [tiger-docs]: <https://www.lrde.epita.fr/~tiger/tiger.html>
