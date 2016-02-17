@@ -43,7 +43,6 @@ A_exp absyn_root;
 %token BREAK NIL
 %token FUNCTION VAR TYPE 
 %token IMPORT PRIVATE
-%token FLECHINHA
 
 %type <A_exp> preExp exp ifExp orExp andExp BooleanExp plusMinusExp TimesDivideExp exps
 %type <A_var> lvalue 

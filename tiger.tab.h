@@ -90,8 +90,7 @@ extern int yydebug;
     VAR = 300,
     TYPE = 301,
     IMPORT = 302,
-    PRIVATE = 303,
-    FLECHINHA = 304
+    PRIVATE = 303
   };
 #endif
 
@@ -124,7 +123,7 @@ union YYSTYPE
 
 	
 
-#line 128 "tiger.tab.h" /* yacc.c:1909  */
+#line 127 "tiger.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

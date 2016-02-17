@@ -23,7 +23,7 @@ VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
 VARIAVEL_INVALIDA_ANTES [0-9._-]+[a-zA-Z0-9]+
 VARIAVEL_INVALIDA_DEPOIS [a-zA-Z]+[0-9.-_]+
 INTEGER  [0-9]+
-NUMBER_FLOAT [0-9]*.[0-9]+
+NUMBER_FLOAT [0-9]+.[0-9]+
 
 %%
 
@@ -68,8 +68,9 @@ import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
 {VARIAVEL}                 { yylval.sval = strdup(yytext); adjust(); return ID    ; }
-{VARIAVEL_INVALIDA_ANTES}  { adjust(); EM_error(EM_tokPos, "token inválido")      ; }
-{VARIAVEL_INVALIDA_DEPOIS} { adjust(); EM_error(EM_tokPos, "token inválido")      ; }
+{VARIAVEL_INVALIDA_ANTES}  { adjust(); EM_error(EM_tokPos, "Token ilegal")        ; }
+{VARIAVEL_INVALIDA_DEPOIS} { adjust(); EM_error(EM_tokPos, "Token ilegal")        ; }
+
 {INTEGER}                  { yylval.ival = atoi(yytext); adjust();   return INT   ; }
 {NUMBER_FLOAT}             { yylval.ival = atoi(yytext); adjust();   return FLOAT ; }
 
