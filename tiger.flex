@@ -23,6 +23,7 @@ VARIAVEL [a-zA-Z][a-zA-Z0-9_]*
 VARIAVEL_INVALIDA_ANTES [0-9._-]+[a-zA-Z0-9]+
 VARIAVEL_INVALIDA_DEPOIS [a-zA-Z]+[0-9.-_]+
 INTEGER  [0-9]+
+NUMBER_FLOAT [0-9]*.[0-9]+
 
 %%
 
@@ -67,9 +68,10 @@ import    { adjust(); return IMPORT    ; }
 primitive { adjust(); return PRIVATE   ; }
 
 {VARIAVEL}                 { yylval.sval = strdup(yytext); adjust(); return ID    ; }
-{VARIAVEL_INVALIDA_ANTES}  { adjust(); EM_error(EM_tokPos, "token inválido"); }
-{VARIAVEL_INVALIDA_DEPOIS} { adjust(); EM_error(EM_tokPos, "token inválido"); }
-{DIGIT}+                   { yylval.ival = atoi(yytext); adjust(); return INT     ; }
+{VARIAVEL_INVALIDA_ANTES}  { adjust(); EM_error(EM_tokPos, "token inválido")      ; }
+{VARIAVEL_INVALIDA_DEPOIS} { adjust(); EM_error(EM_tokPos, "token inválido")      ; }
+{INTEGER}                  { yylval.ival = atoi(yytext); adjust();   return INT   ; }
+{NUMBER_FLOAT}             { yylval.ival = atoi(yytext); adjust();   return FLOAT ; }
 
 "/*" { BEGIN(IN_COMMENT); contadorComentario++; }
 
@@ -97,8 +99,6 @@ int yywrap() {}
 
 void adjust(){
    if (strcmp( yytext, "\n" ) == 0 ) {
-      // coluna = 1;
-      // linha++;
       EM_newline();
    }else{
       EM_tokPos += yyleng;

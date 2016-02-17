@@ -57,7 +57,7 @@ A_exp absyn_root;
 %type <A_nametyList> typedecs
 %type <A_fundec> fundec
 %type <A_fundecList> fundecs
-%type <A_ty> ty /* ty_list */
+%type <A_ty> ty
 %type <A_fieldList> tyfields fieldList
 %type <A_field> tyfield 
 
@@ -119,7 +119,8 @@ recordfields:
 ;
 
 recordfield: 
-	ID EQUAL exp									{ $$=A_Efield(EM_tokPos, S_Symbol($1), $3); }
+	ID EQUAL exp									{ $$=A_Efield(S_Symbol($1), $3); }
+;
 
 efieldList :
 													{ $$=NULL; }
@@ -130,7 +131,7 @@ efieldList :
 lvalue 	: 
 	ID						 						{ $$=A_SimpleVar(EM_tokPos, S_Symbol($1));}
 	| ID DOT ID										{ $$=A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3)); }
-	| ID LBRACK exp RBRACK							{ $$=A_SubVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
+	| ID LBRACK exp RBRACK							{ $$=A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3); }
 ;
 
 BooleanExp : 
@@ -197,24 +198,15 @@ typedecs :
 ;
 
 typedec : 
-	TYPE ID EQUAL ty								{ $$=A_Namety(EM_tokPos, S_Symbol($2), $4); }
+	TYPE ID EQUAL ty								{ $$=A_TypeDec(EM_tokPos, A_NametyList($2, $4)); }
 ;
 
 ty 	: 
 	ID												{ $$=A_NameTy(EM_tokPos, S_Symbol($1)); }
     | LBRACE tyfields RBRACE						{ $$=A_RecordTy(EM_tokPos, $2); }
     | ARRAY OF ID									{ $$=A_ArrayTy(EM_tokPos, S_Symbol($3));}
-/*		| ty FLECHINHA ty																							{ $$=A_NameTy(EM_tokPos, S_Symbol($1));}
-		| LPAREN ty ty_list RPAREN FLECHINHA ty												{ $$=A_NameTy(EM_tokPos, S_Symbol($2));}
-		| LPAREN RPAREN FLECHINHA ty																	{ $$=A_NameTy(EM_tokPos, S_Symbol($4));}
+;
 
-;
-*/
-/*
-ty_list :																													{ $$=NULL;}
-				| COMMA ty ty_list																				{ $$=A_NameTy(EM_tokPos, S_Symbol($2));}
-;
-*/
 tyfields:
 													{ $$=NULL; }
     | tyfield fieldList								{ $$=A_FieldList($1, $2); }	
